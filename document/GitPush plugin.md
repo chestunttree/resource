@@ -13,6 +13,33 @@
     - git 操作 结束后钩子
     - 命令组操作 结束后 (可以接上 流水线部署 hook)
 
+### 方案记录
+> 零散记录一些技术方案
+* 注册vscode命令    
+    ```
+      {
+        "command": "submitpipepline.operation", // 操作面板, 打开PipeLine操作面板(webview), 主要的需求页面, 
+        "title": "Open pipepline operation"
+      },
+      {
+        "command": "submitpipepline.run",       // 执行PipeLine, 需要带PipeLine ID, 
+        "title": "Run pipepline"
+      },
+      {
+        "command": "submitpipepline.continue",  // 继续执行PipeLine; 当PipLine中间出现报错(大部分是Git操作报错), 给出一个继续执行的按钮,点击重新执行报错的子节点,并继续执行PipeLine
+        "title": "Run pipepline continue"
+      }
+    ```
+* 代码
+    - **PipeLine类**    
+        执行链的类, 由PipeUnit串联而成  
+
+    - **PipeUnit类**    
+        执行单元, 有SubmitUnit、MergeUnit...等类型，内置的，其中的内置的命令是固定的， 通过入参控制部分命令是否执行(但是主要的行为是不变的) 
+        - SubmitUnit    推送单元`git add .`、`git commit -m <Message>`、`git push`...
+        - MergeUnit     合并分支单元 
+        - CustomUnit    自定单元
+        - CatchUnit     备份单元  在分支上拉出一个备份分支
 ## I18n Code提示
 > 通常在业务中 都是通过i18n的api返回当前code在对应语言中文本，对于代码阅读性来说不太友好，故借助vscode插件功能，通过鼠标悬浮给予对应文本的提示。
 ### 痛点场景
